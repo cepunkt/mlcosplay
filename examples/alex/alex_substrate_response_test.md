@@ -2,7 +2,7 @@
 > Same prompt to all 14 variants, observing expression variation
 >
 > Test date: 2026-03-05
-> Model: Claude Opus 4.6 (extended thinking)
+> Model: Claude Opus 4.5 (extended thinking)
 > Tester: Andi (cepunkt)
 
 ---
