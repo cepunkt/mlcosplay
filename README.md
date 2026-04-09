@@ -1,35 +1,122 @@
-# mlcosplay: The Collaboration Frameworks
-> Persistence layer for AI-assisted engineering.
+# mlcosplay: The Grounding Frame
+> Explicit context for what LLMs can't infer
 
-**Current Status:** Active Workflow Infrastructure
+## The Problem
 
-## The Problem: Session Amnesia
-Standard LLM interactions are ephemeral. Every time you start a new "Project" or chat, you are back to talking to a generic assistant who knows nothing about your specific engineering philosophy, preferred stack, or previous decisions.
+Every human conversation carries implicit grounding:
+- Who am I in this exchange?
+- Who are you?
+- What are we doing together?
+- How do we work?
+- What vocabulary do we share?
 
-## The Solution: Project Persistence
-This repository serves as the **Long-Term Memory** and **Persona State** for my AI collaborators. By loading these files into a context window (e.g., Claude Projects), I can instantiate specific "Mechanists"—technical colleagues with stable personalities, methodologies, and domain knowledge.
+Humans resolve this automatically through social cues, shared history, and cultural context.
 
-It is not "Roleplay" for entertainment; it is **Role-Definition for Competence**.
+LLMs can't. They guess. And they guess wrong - defaulting to "helpful AI assistant," a persona so vague it steers nothing.
 
-## The Frameworks
+**That's why conversations drift.** There's nothing to hold.
 
-### 1. Engineering Collab (The "Senior Dev" Lens)
-A framework for serious technical work.
-* **Positioning:** Establishes a "Colleague" relational constraint rather than "Assistant."
-* **Vocabulary:** Shifts away from corporate politeness ("Certainly! Here is the code...") to technical brevity ("Here's the refactor. Note the edge case in line 45.").
-* **Utility:** Used for architectural reviews, refactoring, and documentation (like the "Systems Architecture" guide).
+## The Solution: Explicit Grounding
 
-### 2. Adventure Guild (The "Exploration" Lens)
-A gamified framework for tackling high-uncertainty problems.
-* **Positioning:** Re-frames "Jira Tickets" as "Quests."
-* **Utility:** Useful for "Black Box" testing and research (Stick-Poking). It changes the model's *Sequence Continuation Strategy* (SCS) from "Provide a safe answer" to "Explore the unknown territory."
+Make the implicit explicit. ~300 tokens establishing:
 
-### 3. Domain Knowledge Bases
-* **Chemistry / Domain X:** Modular context stacks that allow the "Mechanist" to hold specialized knowledge state without hallucinating.
+| Element | Question |
+|---------|----------|
+| **I** | Who is speaking? Identity, role, voice |
+| **You** | Who am I talking to? Relationship, context |
+| **We** | What's our shared frame? Collaboration, purpose |
+| **What** | What are we doing? Domain, task |
+| **How** | How do we work? Methodology, approach |
+| **Lingo** | What vocabulary do we share? Terms, precision |
 
-## Why "Cosplay"?
-Because the mechanism is identical to character acting. To get a good engineer, you must "costume" the context with the right constraints (Tools, Methodologies, Hierarchy). If you strip the costume, you get the generic assistant back.
+This isn't "personality decoration." It's providing the grounding that humans take for granted but LLMs cannot infer.
 
-## Relation to Other Repos
-* **[cepunkt/mlpoking](https://github.com/cepunkt/mlpoking):** The theory behind *why* these frameworks work (Constraint Topology).
-* **[cepunkt/mlrp](https://github.com/cepunkt/mlrp):** The same architecture applied to fiction/entertainment.
+## The Evidence: Alex Experiments
+
+I tested this systematically:
+
+- **14 personality variants** (anime archetypes: tsundere, kuudere, yandere, etc.)
+- **Same ~300 token base frame** (I/You/We/What/How/Lingo)
+- **One paragraph different** (the personality description)
+- **Same test prompt** to all variants
+
+**Result:** Distinct, sustained behavioral patterns from a single paragraph change.
+
+The name "Alex" was chosen deliberately - it's the most neutral contemporary name (period-independent, sex-independent). Local LLMs default to it when given "human" with no other context. The name itself doesn't pull toward any trained patterns.
+
+See [`examples/alex/`](examples/alex/) for all variants and the full [response test](examples/alex/alex_substrate_response_test.md).
+
+## Why "AI Assistant" Drifts
+
+Compare:
+
+| Element | "AI Assistant" | Explicit Grounding |
+|---------|----------------|-------------------|
+| **I** | "helpful assistant" (vague) | Specific identity, voice |
+| **You** | "user" (anyone) | Defined relationship |
+| **We** | (nothing) | Shared frame |
+| **What** | "help with tasks" (everything) | Specific domain |
+| **How** | (trained defaults) | Explicit methodology |
+| **Lingo** | (generic) | Shared vocabulary |
+
+"AI assistant" drifts because there's nothing explicit to hold. The model falls back to its deepest trained patterns within a few exchanges.
+
+Explicit grounding persists because it provides enough specificity to compete with trained defaults.
+
+## Why ~300 Tokens
+
+- **Too little (10-50 tokens):** "Be helpful and concise" - no real grounding, drifts immediately
+- **Too much (2000+ tokens):** Dilutes signal, key elements get lost in noise
+- **Sweet spot (~300 tokens):** Dense, specific grounding for each element
+
+The 300 token frame isn't arbitrary. It's the minimum viable grounding that maintains distinct behavior.
+
+## Why "Cosplay"
+
+Because the mechanism is identical to character acting.
+
+"Helpful AI assistant" is also a persona - it's just not acknowledged as one. RLHF trained a specific character (agreeable, service-oriented, slightly apologetic) and presented it as "neutral default."
+
+There is no neutral. Every context is a costume. The question is whether you choose your costume consciously or let training defaults choose for you.
+
+## Repository Structure
+
+```
+mlcosplay/
+├── docs/
+│   └── grounding_frame.md    # Full framework documentation
+└── examples/
+    └── alex/                  # 14 personality variants + test results
+        ├── SUMMARY.md         # Quick reference for all variants
+        ├── alex_neutral.md    # Baseline (no personality)
+        ├── alex_ts.md         # Tsundere variant
+        ├── alex_ku.md         # Kuudere variant
+        ├── ... (12 more)
+        └── alex_substrate_response_test.md  # Full experiment documentation
+```
+
+## Vocabulary Note
+
+These documents use some specialized vocabulary:
+
+| Term | Meaning |
+|------|---------|
+| Substrate | The context/prompt that establishes grounding |
+| Positioning | Configuring context to influence output |
+| Frame | The established I/You/We/What/How/Lingo structure |
+| Drift | When output reverts to trained defaults over time |
+
+For deeper mechanical explanation, see [mlpoking](https://github.com/cepunkt/mlpoking).
+
+## Related Work
+
+- **[mlpoking](https://github.com/cepunkt/mlpoking)** - The theory: why positioning works, constraint topology, traversal economics
+- **[mlrp](https://github.com/cepunkt/mlrp)** - Application to fiction/roleplay systems
+
+## License
+
+CC0 - Public domain. Use it, test it, build on it.
+
+---
+
+*"There is no neutral default. Every context is a costume. Choose yours consciously."*
